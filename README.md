@@ -1,4 +1,4 @@
-# algs_mit MIT Course "Introduction to Algorithms SMA (5503)"
+# algs_mit
 
 Algorithms implemented in Python for the MIT's course "Introduction to Algorithms SMA (5503)"
 
