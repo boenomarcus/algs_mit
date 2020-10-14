@@ -26,8 +26,9 @@ def max_subarray_bf(A:list) -> list:
     
     # Iterate over list using a brute force approach
     for i in range(len(A)-1):
+        tmp = A[i]
         for j in range(i, len(A)-1):
-            tmp = sum(A[i:j+1])
+            tmp += A[j]
             if tmp > diff:
                 beg, end, diff = i, j, tmp
     
