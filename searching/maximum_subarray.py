@@ -12,6 +12,44 @@ different approaches as described on Chapter 2 of the book
 """
 
 
+def _maxSubarray_kadane(A:list) -> tuple:
+    """Kadane's Approach for the Maximum Subarray Algorithm
+
+    Theta Notation:
+        - Kadane's Approach yields "n" (linear) time complexity.
+    
+    > Arguments:
+        - A (list): Array of numbers (int or float).
+    
+    > Output:
+        - Tuple with indices and sum of the maximum subarray.
+    """
+    # Create variables to stores results
+    low, high, array_sum, current_sum = 0, 0, 0, 0
+
+    # Iterate over elementes of the list
+    for current_high, x in enumerate(A):
+
+        # Change references if the current sum is smaller than 0
+        if current_sum <= 0:
+            current_low, current_sum = current_high, x
+
+        # Add the next element to the sum if the accumulated sum
+        # is still higher than zero 
+        else:
+            current_sum += x
+
+        # If the current sum becomes higher than the temporary
+        # max subarray, update the references
+        if current_sum > array_sum:
+            array_sum = current_sum
+            low = current_low
+            high = current_high + 1
+
+    # Return low and high indices and max subarray sum 
+    return low, high-1, array_sum
+
+
 def _maxSubarray_DaC(A:list, low:int, high:int) -> tuple:
     """Divide and Conquer Approach for the Maximum Subarray Algorithm
 
@@ -92,18 +130,18 @@ def _maxSubarray_BF(A:list) -> tuple:
             if tmp > array_sum:
                 low, high, array_sum = i, j, tmp
     
-    # Return sorted list
+    # Return low and high indices and max subarray sum 
     return low, high, array_sum
 
 
-def maximum_subarray(A:list, method="divide_conquer") -> tuple:
+def maximum_subarray(A:list, method="kadane") -> tuple:
     """Maximum Subarray Algorithm
     
     > Arguments:
         - A (list): Array of numbers (int or float);
         - method (str): Method to get maximum subarray.
-            ---> Options: "brute_force", "divide_conquer";
-            ---> Defaults to "divide_conquer".
+            ---> Options: "brute_force", "divide_conquer", "kadane";
+            ---> Defaults to "kadane".
     
     > Output:
         - Tuple with indices and sum of the maximum subarray
@@ -112,6 +150,10 @@ def maximum_subarray(A:list, method="divide_conquer") -> tuple:
     if method == "divide_conquer":
         return _maxSubarray_DaC(A, 0, len(A)-1)
     
+    # Kadane Approach
+    elif method == "kadane":
+        return _maxSubarray_kadane(A)
+
     # Brute Force Approach
     elif method == "brute_force":
         return _maxSubarray_BF(A)
@@ -140,4 +182,11 @@ if __name__ == "__main__":
     dc_indices = maximum_subarray(A, "divide_conquer")
     print(f"    > Subarray: {A[dc_indices[0]:dc_indices[1]+1]}")
     print(f"    > Indices: {dc_indices[0]}:{dc_indices[1]}")
-    print(f"    > Sum: {dc_indices[2]}\n")
+    print(f"    > Sum: {dc_indices[2]}")
+
+    # Divide and Conquer
+    print(f"\nMaximum Subarray (Kadane's Approach)")
+    kn_indices = maximum_subarray(A, "kadane")
+    print(f"    > Subarray: {A[kn_indices[0]:kn_indices[1]+1]}")
+    print(f"    > Indices: {kn_indices[0]}:{kn_indices[1]}")
+    print(f"    > Sum: {kn_indices[2]}\n")
