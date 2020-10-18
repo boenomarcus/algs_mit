@@ -46,6 +46,48 @@ def _matrixMult_std(A:list, B:list) -> list:
         raise ValueError(f"Matrices dimensions do not match!\n")
 
 
+def _squarePadding(A:list, l:int, padding=0) -> list:
+    """Square-Padding Function
+    
+    Rezises matrix to an even-square matrix.
+    
+    > Arguments:
+        - A (matrix): Nested list representing a 2D matrix;
+        - l (int): Resize factor (matrix will become size lxl);
+        - padding (int): Integer to be added to matrix.
+            ---> Defaults to 0.
+    
+    > Output:
+        - Resized matrix (do not share content with original matrix).
+    """
+    # Check if resize factor is valid
+    if len(A) > l or len(A[0]) > l:
+        # Raise an error if the resize factor is out of bounds 
+        raise ValueError(f"Resize factor (l = {l}) is out of bounds\n")
+    
+    # Check if resizing is necessary
+    elif len(A) == l and len(A[0]) == l:
+        # Return a deep copy of the original matrix
+        return [row[:] for row in A]
+    
+    # Resizing when necessary
+    else:
+        # Make a deep copy of A
+        B = [row[:] for row in A]
+        
+        # Adding columns
+        cols_diff = l - len(A[0])
+        for row in B:
+            row.extend(cols_diff*[padding])
+
+        # Adding rows
+        rows_diff = l - len(A)
+        B.extend(rows_diff*[l*[padding]])
+        
+        # Return resized matrix
+        return B
+
+
 def _dimChecker(*m:list, operation:str) -> bool:
     """2D Matrix Dimension Checker
     
