@@ -22,28 +22,94 @@ def _matrixMult_std(A:list, B:list) -> list:
     > Output:
         - Matrix with multiplication results.    
     """
-    # Check if matrices dimensions match
-    if _dimChecker(A, B, operation="multiply"):
+    # Make a deep copy of B
+    C = [row[:] for row in B]
 
-        # Create empty matrix do store results
-        C = [[0 for i in range(len(B[0]))] for j in range(len(B))]
-
-        # Iterate over rows of A
-        for i in range(len(A)):
-            # Iterate over columns of B
-            for j in range(len(B[0])):
-                # Iterate over elements and add results to C
-                tmp = 0
-                for k in range(len(A[0])):
-                    tmp +=A[i][k]*B[k][j]
-                C[i][j] = tmp
+    # Iterate over rows of A
+    for i in range(len(A)):
+        # Iterate over columns of B
+        for j in range(len(B[0])):
+            # Iterate over elements and add results to C
+            tmp = 0
+            for k in range(len(A[0])):
+                tmp +=A[i][k]*B[k][j]
+            C[i][j] = tmp
         
-        # Return results
-        return C
+    # Return results
+    return C
 
-    # Raise an error if the dimensions do not match
+
+def _matrixMult_DaC(A:list, B:list) -> list:
+    """Divide and Conquer Approach for 2D Matrices Multiplication
+
+    Theta Notation:
+        - DaC approach yields "n**3" (cubic) time complexity.
+    
+    > Arguments:
+        - A (matrix): Nested list representing a 2D matrix;
+        - B (matrix): Nested list representing a 2D matrix.
+    
+    > Output:
+        - Matrix with multiplication results.    
+    """
+    
+    # Conquer Step
+    if len(A) == 2:
+        # Return standard multiplication for 2x2 square matrix
+        return _matrixMult_std(A, B)
+
+    # Divide and Combine Steps
     else:
-        raise ValueError(f"Matrices dimensions do not match!\n")
+
+        # Get matrices dimensions
+        n, m, p, q = len(A[0]), len(A), len(B[0]), len(B)
+
+        # Get max dimension to apply padding
+        l = max([n, m, p, q])
+        if l%2 != 0:
+            l += 1
+        
+        # Apply padding
+        A_pad, B_pad = _squarePadding(A, l, 0), _squarePadding(B, l, 0)
+
+        # Divide Step
+        mid = len(A_pad)//2
+        
+        # Dividing A matrix
+        a11 = [X[:mid] for X in A_pad[:mid]]
+        a12 = [X[mid:] for X in A_pad[:mid]]
+        a21 = [X[:mid] for X in A_pad[mid:]]
+        a22 = [X[mid:] for X in A_pad[mid:]]
+
+        # Dividing B matrix
+        b11 = [X[:mid] for X in B_pad[:mid]]
+        b12 = [X[mid:] for X in B_pad[:mid]]
+        b21 = [X[:mid] for X in B_pad[mid:]]
+        b22 = [X[mid:] for X in B_pad[mid:]]
+            
+        # Creating C Matrix elements
+        c11 = matrix_add(
+            _matrixMult_DaC(a11, b11),
+            _matrixMult_DaC(a12, b21)
+            )
+        c12 = matrix_add(
+            _matrixMult_DaC(a11, b12), 
+            _matrixMult_DaC(a12, b22)
+            )
+        c21 = matrix_add(
+            _matrixMult_DaC(a21, b11), 
+            _matrixMult_DaC(a22, b21)
+            )
+        c22 = matrix_add(
+            _matrixMult_DaC(a21, b12), 
+            _matrixMult_DaC(a22, b22)
+            )
+
+        # Combine Step
+        C = [a+b for a,b in zip(c11, c12)] + [a+b for a,b in zip(c21, c22)]
+
+        # Return results
+        return [row[:p] for row in C[:q]]
 
 
 def _squarePadding(A:list, l:int, padding=0) -> list:
@@ -156,24 +222,36 @@ def matrix_multiply(A:list, B:list, method="standard") -> list:
 
     Theta Notation:
         - "standard" yields "n**3" (cubic) time complexity;
+        - "divide_conquer" yields "n**3" (cubic) time complexity.
     
     > Arguments:
         - A (matrix): Nested list representing a 2D matrix;
         - B (matrix): Nested list representing a 2D matrix.
         - method (str): Method to multiply matrices.
-            ---> Options: "standard";
+            ---> Options: "standard", "divide_conquer";
             ---> Defaults to "standard".
     
     > Output:
         - Matrix with multiplication results
     """
-    # Standard 2D Multiplication
-    if method == "standard":
-        return _matrixMult_std(A, B)
+    # Check if matrices dimensions match
+    if _dimChecker(A, B, operation="multiply"):
+
+        # Standard 2D Multiplication
+        if method == "standard":
+            return _matrixMult_std(A, B)
+        
+        # Divide and Conquer Approach
+        elif method == "divide_conquer":
+            return _matrixMult_DaC(A, B)
+        
+        # Method not implemented
+        else:
+            raise NotImplementedError(f"Method '{method}' not implemented!\n")
     
-    # Method not implemented
+    # Raise an error if the dimensions do not match
     else:
-        raise NotImplementedError(f"Method '{method}' not implemented!\n")
+        raise ValueError(f"Matrices dimensions do not match!\n")
 
 
 if __name__ == "__main__":
@@ -181,18 +259,31 @@ if __name__ == "__main__":
     # Declare matrices and apply some basic operations
     A = [[2, -1], [1, 3]]
     B = [[1, 2, -1], [3, 4, 0]]
-    C = [[5, 0, -3], [4, 3, 2]]
-    D = [[-2, 1, 4], [0, 7, -4]]
+    C = [[2, 3, 3], [3, 1, 3], [-2, 0, 4]]
+    D = [[3, 1], [2, 2], [1, 3]]
+    E = [[5, 0, -3], [4, 3, 2]]
+    F = [[-2, 1, 4], [0, 7, -4]]
 
     # Multiplication
     print("\n>> 2D Matrix Multiplication Examples:")
     print(f"\nMatrix A: {A}")
-    print(f"Matrix B: {B}\n")
-    print(f"  > Standard Approach (A.B): {matrix_multiply(A, B, 'standard')}\n")
+    print(f"Matrix B: {B}")
+    print(f"Matrix C: {C}")
+    print(f"Matrix D: {D}\n")
+    print(f"  > Standard Approach (A.B): {matrix_multiply(A, B, 'standard')}")
+    print(f"  > Standard Approach (C.D): {matrix_multiply(C, D, 'standard')}")
+    print("  > Divide and Conquer Approach (A.B): {}".format(
+        matrix_multiply(A, B, 'divide_conquer')
+        )
+    )
+    print("  > Divide and Conquer Approach (C.D): {}\n".format(
+        matrix_multiply(C, D, 'divide_conquer')
+        )
+    )
 
     # Addition
     print(">> 2D Matrix Addition Example:")
     print(f"\nMatrix B: {B}")
-    print(f"Matrix C: {C}")
-    print(f"Matrix D: {D}\n")
-    print(f"  > B+C+D: {matrix_add(B, C, D)}\n")
+    print(f"Matrix E: {E}")
+    print(f"Matrix F: {F}\n")
+    print(f"  > B+E+F: {matrix_add(B, E, F)}\n")
