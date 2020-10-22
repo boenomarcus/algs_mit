@@ -2,7 +2,7 @@
 Base operations for 2D Matrices
 
 Author: Marcus Moresco Boeno
-Last Update: 2020-10-18
+Last Update: 2020-10-22
 
 Implements functions for basic operations with 2D matrices
 
@@ -112,6 +112,88 @@ def _matrixMult_DaC(A:list, B:list) -> list:
         return [row[:p] for row in C[:q]]
 
 
+def _matrixMult_Strassen(A:list, B:list) -> list:
+    """Strassen's Method for 2D Matrices Multiplication
+
+    Theta Notation:
+        - Strassen's approach yields "n**lg(7)" time complexity.
+    
+    > Arguments:
+        - A (matrix): Nested list representing a 2D matrix;
+        - B (matrix): Nested list representing a 2D matrix.
+    
+    > Output:
+        - Matrix with multiplication results.    
+    """
+    
+    # Conquer Step
+    if len(A) == 2:
+        # Return standard multiplication for 2x2 square matrix
+        return _matrixMult_std(A, B)
+
+    # Divide and Combine Steps
+    else:
+
+        # Get matrices dimensions
+        n, m, p, q = len(A[0]), len(A), len(B[0]), len(B)
+
+        # Get max dimension to apply padding
+        l = max([n, m, p, q])
+        if l%2 != 0:
+            l += 1
+        
+        # Apply padding
+        A_pad, B_pad = _squarePadding(A, l, 0), _squarePadding(B, l, 0)
+
+        # Divide Step
+        mid = len(A_pad)//2
+        
+        # Dividing A matrix
+        a11 = [X[:mid] for X in A_pad[:mid]]
+        a12 = [X[mid:] for X in A_pad[:mid]]
+        a21 = [X[:mid] for X in A_pad[mid:]]
+        a22 = [X[mid:] for X in A_pad[mid:]]
+
+        # Dividing B matrix
+        b11 = [X[:mid] for X in B_pad[:mid]]
+        b12 = [X[mid:] for X in B_pad[:mid]]
+        b21 = [X[:mid] for X in B_pad[mid:]]
+        b22 = [X[mid:] for X in B_pad[mid:]]
+        
+        # Base additions
+        s1 = matrix_subtract(b12, b22)
+        s2 = matrix_add(a11, a12)
+        s3 = matrix_add(a21, a22)
+        s4 = matrix_subtract(b21, b11)
+        s5 = matrix_add(a11, a22)
+        s6 = matrix_add(b11, b22)
+        s7 = matrix_subtract(a12, a22)
+        s8 = matrix_add(b21, b22)
+        s9 = matrix_subtract(a11, a21)
+        s10 = matrix_add(b11, b12)
+
+        # Base multiplications
+        p1 = _matrixMult_Strassen(a11, s1)
+        p2 = _matrixMult_Strassen(s2, b22)
+        p3 = _matrixMult_Strassen(s3, b11)
+        p4 = _matrixMult_Strassen(a22, s4)
+        p5 = _matrixMult_Strassen(s5, s6)
+        p6 = _matrixMult_Strassen(s7, s8)
+        p7 = _matrixMult_Strassen(s9, s10)
+
+        # Creating C Matrix elements
+        c11 = matrix_add(p5, matrix_subtract(p4, p2), p6)
+        c12 = matrix_add(p1, p2)
+        c21 = matrix_add(p3, p4)
+        c22 = matrix_add(p5, matrix_subtract(p1, p3, p7))
+
+        # Combine Step
+        C = [a+b for a,b in zip(c11, c12)] + [a+b for a,b in zip(c21, c22)]
+
+        # Return results
+        return [row[:p] for row in C[:q]]
+
+
 def _squarePadding(A:list, l:int, padding=0) -> list:
     """Square-Padding Function
     
@@ -203,18 +285,58 @@ def matrix_add(*m:list) -> list:
     > Output:
         - Matrix with addition results
     """
-    # Check if matrices dimensions match
-    if _dimChecker(m, operation="add"):
-        # Return results
-        #   obs:
-        #     - lcs: Elements for a given i,j position
-        #     - ls: List of elements for a given i (line) position
-        #     - *m: List of 2D matrices
-        return [[sum(lcs) for lcs in zip(*ls)] for ls in zip(*m)]
+    # Check if only one matrix was provided
+    if len(m) > 1:
+
+        # Check if matrices dimensions match
+        if _dimChecker(m, operation="add"):
+            # Return results
+            #   obs:
+            #     - lcs: Elements for a given i,j position
+            #     - ls: List of elements for a given i (line) position
+            #     - *m: List of 2D matrices
+            return [[sum(lcs) for lcs in zip(*ls)] for ls in zip(*m)]
+        
+        # Raise an error if the dimensions do not match
+        else:
+            raise ValueError("Matrices dimensions do not match!\n")
     
-    # Raise an error if the dimensions do not match
+    # Raise an error if only one matrix was provided
     else:
-        raise ValueError("Matrices dimensions do not match!\n")
+        raise ValueError("Not enough matrices to make computation!\n")
+
+
+def matrix_subtract(*m:list) -> list:
+    """Subtraction of 2D Matrices
+
+    Theta Notation:
+        - Subtraction yields "n**2" (quadratic) time complexity.
+    
+    > Arguments:
+        - m (list): List of 2D matrices.
+    
+    > Output:
+        - Matrix with subtraction results
+    """
+    # Check if only one matrix was provided
+    if len(m) > 1:
+
+        # Check if matrices dimensions match
+        if _dimChecker(m, operation="subtract"):
+            # Return results
+            #   obs:
+            #     - lcs: Elements for a given i,j position
+            #     - ls: List of elements for a given i (line) position
+            #     - *m: List of 2D matrices
+            return [[lcs[0]-sum(lcs[1:]) for lcs in zip(*ls)] for ls in zip(*m)]
+
+        # Raise an error if the dimensions do not match
+        else:
+            raise ValueError("Matrices dimensions do not match!\n")
+    
+    # Raise an error if only one matrix was provided
+    else:
+        raise ValueError("Not enough matrices to make computation!\n")
 
 
 def matrix_multiply(A:list, B:list, method="standard") -> list:
@@ -228,7 +350,7 @@ def matrix_multiply(A:list, B:list, method="standard") -> list:
         - A (matrix): Nested list representing a 2D matrix;
         - B (matrix): Nested list representing a 2D matrix.
         - method (str): Method to multiply matrices.
-            ---> Options: "standard", "divide_conquer";
+            ---> Options: "standard", "divide_conquer", "strassen";
             ---> Defaults to "standard".
     
     > Output:
@@ -244,6 +366,10 @@ def matrix_multiply(A:list, B:list, method="standard") -> list:
         # Divide and Conquer Approach
         elif method == "divide_conquer":
             return _matrixMult_DaC(A, B)
+        
+        # Strassen's Approach
+        elif method == "strassen":
+            return _matrixMult_Strassen(A, B)
         
         # Method not implemented
         else:
@@ -271,19 +397,34 @@ if __name__ == "__main__":
     print(f"Matrix C: {C}")
     print(f"Matrix D: {D}\n")
     print(f"  > Standard Approach (A.B): {matrix_multiply(A, B, 'standard')}")
-    print(f"  > Standard Approach (C.D): {matrix_multiply(C, D, 'standard')}")
     print("  > Divide and Conquer Approach (A.B): {}".format(
         matrix_multiply(A, B, 'divide_conquer')
         )
     )
-    print("  > Divide and Conquer Approach (C.D): {}\n".format(
+    print("  > Strassen's Approach (A.B): {}\n".format(
+        matrix_multiply(A, B, 'strassen')
+        )
+    )
+    print(f"  > Standard Approach (C.D): {matrix_multiply(C, D, 'standard')}")
+    print("  > Divide and Conquer Approach (C.D): {}".format(
         matrix_multiply(C, D, 'divide_conquer')
         )
     )
-
+    print("  > Strassen's Approach (C.D): {}\n".format(
+        matrix_multiply(C, D, 'strassen')
+        )
+    )
+    
     # Addition
     print(">> 2D Matrix Addition Example:")
     print(f"\nMatrix B: {B}")
     print(f"Matrix E: {E}")
     print(f"Matrix F: {F}\n")
     print(f"  > B+E+F: {matrix_add(B, E, F)}\n")
+
+    # Subtraction
+    print(">> 2D Matrix Subtraction Example:")
+    print(f"\nMatrix B: {B}")
+    print(f"Matrix E: {E}")
+    print(f"Matrix F: {F}\n")
+    print(f"  > B-E-F: {matrix_subtract(B, E, F)}\n")
