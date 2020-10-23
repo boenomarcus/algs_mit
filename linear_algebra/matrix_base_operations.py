@@ -2,7 +2,7 @@
 Base operations for 2D Matrices
 
 Author: Marcus Moresco Boeno
-Last Update: 2020-10-22
+Last Update: 2020-10-23
 
 Implements functions for basic operations with 2D matrices
 
@@ -344,7 +344,8 @@ def matrix_multiply(A:list, B:list, method="standard") -> list:
 
     Theta Notation:
         - "standard" yields "n**3" (cubic) time complexity;
-        - "divide_conquer" yields "n**3" (cubic) time complexity.
+        - "divide_conquer" yields "n**3" (cubic) time complexity;
+        - "strassen" yields "n**lg(7)" time complexity.
     
     > Arguments:
         - A (matrix): Nested list representing a 2D matrix;
