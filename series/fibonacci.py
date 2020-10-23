@@ -62,17 +62,48 @@ def _fibo_bottom_up(n:int) ->list:
         return c
 
 
+def _fibo_top_down(n:int, arr:list) ->list:
+    """Top-Down Approach for Fibonacci Calculation
+
+    Theta Notation:
+        - Top-Down approach yields "n" (linear) time complexity.
+    
+    > Arguments:
+        - n (int): Index of the fibonacci sequence;
+        - arr (list): list of zeros with length equals to n+1. 
+    
+    > Output:
+        - Fibonacci number for the given index.
+    """
+    # Conquer step for base cases (n == 0 or n == 1)
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    
+    # If fibonacci subproblem is already computed return its value
+    if arr[n] != 0:
+        return arr[n]
+
+    # Divide and Combine steps 
+    arr[n] = _fibo_top_down(n-1, arr) + _fibo_top_down(n-2, arr)
+    
+    # Return Results
+    return arr[n]
+
+
 def fibo(n:int, method="bottom-up") -> int:
     """Fibonacci Numbers Computation
 
     Theta Notation:
         - "recursive" yields "2**n" (exponential) time complexity;
-        - "bottom-up" yields "n" (linear) time complexity.
+        - "bottom-up" yields "n" (linear) time complexity;
+        - "top-down" yields "n" (linear) time complexity.
     
     > Arguments:
         - n (int): Index of the fibonacci sequence;
         - method (str): Method to calculate the fibonacci number.
-            ---> Options: "recursive", "bottom-up";
+            ---> Options: "recursive", "bottom-up", "top-down";
             ---> Defaults to "bottom-up".
     
     > Output:
@@ -85,6 +116,10 @@ def fibo(n:int, method="bottom-up") -> int:
     # Bottom-Up Algorithm
     elif method == "bottom-up":
         return _fibo_bottom_up(n)
+    
+    # Top-Down Algorithm
+    elif method == "top-down":
+        return _fibo_top_down(n, [0]*(n+1))
         
     # Method not implemented
     else:
@@ -105,5 +140,11 @@ if __name__ == "__main__":
     print(f"\n  > Bottom-Up Approach:")
     print(f"    - Fib[0:11] = {[fibo(n, 'bottom-up') for n in range(11)]}")
     print(f"    - Fib[10:21] = {[fibo(n, 'bottom-up') for n in range(10, 21)]}")
-    print(f"    - Fib[30] = {fibo(30, 'bottom-up')}\n")
+    print(f"    - Fib[30] = {fibo(30, 'bottom-up')}")
+
+    # Top-Down Approach
+    print(f"\n  > Top-Down Approach:")
+    print(f"    - Fib[0:11] = {[fibo(n, 'top-down') for n in range(11)]}")
+    print(f"    - Fib[10:21] = {[fibo(n, 'top-down') for n in range(10, 21)]}")
+    print(f"    - Fib[30] = {fibo(30, 'top-down')}\n")
     
