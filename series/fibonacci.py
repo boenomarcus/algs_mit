@@ -2,18 +2,18 @@
 Fibonacci calculation
 
 Author: Marcus Moresco Boeno
-Last Update: 2020-10-22
+Last Update: 2020-10-23
 
 Implements functions to calculate fibonacci series
 
 """
 
 
-def fibo_naive(n:int) -> int:
-    """Naive Approach for Fibonacci Series Calculation
+def _fibo_recursive(n:int) -> int:
+    """Recursive Approach for Fibonacci Series Calculation
 
     Theta Notation:
-        - Naive approach yields "2**n" (exponential) time complexity.
+        - Recursive approach yields "2**n" (expo) time complexity.
     
     > Arguments:
         - n (int): Index of the fibonacci sequence.
@@ -29,59 +29,81 @@ def fibo_naive(n:int) -> int:
     
     # Divide and combine steps
     else:
-        return fibo_naive(n-1) + fibo_naive(n-2)
+        return _fibo_recursive(n-1) + _fibo_recursive(n-2)
 
 
-def fibo_caching(n:int, out="series") ->list:
-    """Naive Approach with Cache for Fibonacci Series Calculation
+def _fibo_bottom_up(n:int) ->list:
+    """Bottom-Up Approach for Fibonacci Calculation
 
     Theta Notation:
-        - Naive approach with cache yields "n" (linear) time complexity.
+        - Bottom-Up approach yields "n" (linear) time complexity.
+    
+    > Arguments:
+        - n (int): Index of the fibonacci sequence.
+    
+    > Output:
+        - Fibonacci number for the given index.
+    """
+    # Check for base cases
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    
+    # Compute fibonacci for cases where n >= 2
+    else:
+        # Create variables to store last two indices
+        a, b = 0, 1
+        for i in range(2, n+1):
+            c = a+b
+            a, b = b, c
+        
+        # Return results
+        return c
+
+
+def fibo(n:int, method="bottom-up") -> int:
+    """Fibonacci Numbers Computation
+
+    Theta Notation:
+        - "recursive" yields "2**n" (exponential) time complexity;
+        - "bottom-up" yields "n" (linear) time complexity.
     
     > Arguments:
         - n (int): Index of the fibonacci sequence;
-        - out (str): Type of desired output.
-            ---> Options: "series", "element";
-            ---> Defaults to "series".
+        - method (str): Method to calculate the fibonacci number.
+            ---> Options: "recursive", "bottom-up";
+            ---> Defaults to "bottom-up".
     
     > Output:
-        - Fibonacci series from 0 up to the given index.
+        - Fibonacci number for the given index
     """
-    # Check if output type specified is valid
-    if out in ["series", "element"]:
-        # Iterating over indexes
-        for i in range(n+1):
-            if i == 0:
-                fib = [0]
-            elif i == 1:
-                fib.append(1)
-            else:
-                fib.append(fib[i-1] + fib[i-2])
+    # Recursive Algorithm
+    if method == "recursive":
+        return _fibo_recursive(n)
         
-        if out == "series":
-            # Return results
-            return fib
-        else:
-            return fib[n]
-    
-    # Raise Error if type of output not allowed
+    # Bottom-Up Algorithm
+    elif method == "bottom-up":
+        return _fibo_bottom_up(n)
+        
+    # Method not implemented
     else:
-        raise ValueError("Output type invalid, choose 'series' or 'element'\n")
+        raise NotImplementedError(f"Method '{method}' not implemented!\n")
 
 
 if __name__ == "__main__":
 
     print("\n>> Fibonacci Examples:")
 
-    # Naive Approach
-    print(f"\n    > Naive Approach:")
-    print(f"        - Fib[0:11] = {[fibo_naive(n) for n in range(11)]}")
-    print(f"        - Fib[10:21] = {[fibo_naive(n) for n in range(10, 21)]}")
-    print(f"        - Fib[30] = {fibo_naive(30)}")
+    # Recursive Approach
+    print(f"\n  > Recursive Approach:")
+    print(f"    - Fib[0:11] = {[fibo(n, 'recursive') for n in range(11)]}")
+    print(f"    - Fib[10:21] = {[fibo(n, 'recursive') for n in range(10, 21)]}")
+    print(f"    - Fib[30] = {fibo(30, 'recursive')}")
 
-    # Naive Approach with Cache
-    print(f"\n    > Naive Approach with Cache:")
-    print(f"        - Fib[0:11] = {fibo_caching(10, 'series')}")
-    print(f"        - Fib[10:21] = {fibo_caching(20, 'series')[10:21]}")
-    print(f"        - Fib[30] = {fibo_caching(30, 'element')}\n")
+    # Bottom-Up Approach
+    print(f"\n  > Bottom-Up Approach:")
+    print(f"    - Fib[0:11] = {[fibo(n, 'bottom-up') for n in range(11)]}")
+    print(f"    - Fib[10:21] = {[fibo(n, 'bottom-up') for n in range(10, 21)]}")
+    print(f"    - Fib[30] = {fibo(30, 'bottom-up')}\n")
     
