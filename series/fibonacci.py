@@ -2,7 +2,7 @@
 Fibonacci calculation
 
 Author: Marcus Moresco Boeno
-Last Update: 2020-10-23
+Last Update: 2020-10-27
 
 Implements functions to calculate fibonacci series
 
@@ -92,22 +92,80 @@ def _fibo_top_down(n:int, arr:list) ->list:
     return arr[n]
 
 
+def _fibo_squaring(n:int) -> int:
+    """Squaring Approach for Fibonacci Series Calculation
+
+    Theta Notation:
+        - Squaring approach yields "lg(n)" (logarithmic) time complexity.
+    
+    > Arguments:
+        - n (int): Index of the fibonacci sequence.
+    
+    > Output:
+        - 2x2 matrix with fibonacci numbers following the logic below:
+            ---> [[F(n-1), F(n)], [F(n), F(n+1)]]
+    """
+    
+    # Conquer Step (base cases)
+    if n == 0:
+        return [[0, 0], [0, 0]]
+    elif n == 1:
+        return [[1, 1], [1, 0]]
+    
+    # Divide and Combine Steps
+    else:
+        
+        # Check if n is even
+        if n%2 == 0:
+
+            # Get base matrix to the power of n//2
+            X = _fibo_squaring(n//2)
+            
+            # Multiply halves and return results
+            return [
+                [sum([X[i][k]*X[k][j] for k in range(2)]) for j in range(2)] 
+                for i in range(2)
+                ]
+
+        # n is odd
+        else:
+            # Get base matrix to the power of (n-1)//2
+            X = _fibo_squaring((n-1)//2)
+            
+            # Multiply two halves
+            Y = [
+                [sum([X[i][k]*X[k][j] for k in range(2)]) for j in range(2)]
+                for i in range(2)
+                ]
+
+            # Declare base matrix Q
+            Q = [[1, 1], [1, 0]]
+
+            # Complement multiplication and return results
+            return [
+                [sum([Y[i][k]*Q[k][j] for k in range(2)]) for j in range(2)]
+                for i in range(2)
+                ]
+
+
 def fibo(n:int, method="bottom-up") -> int:
     """Fibonacci Numbers Computation
 
     Theta Notation:
         - "recursive" yields "2**n" (exponential) time complexity;
         - "bottom-up" yields "n" (linear) time complexity;
-        - "top-down" yields "n" (linear) time complexity.
+        - "top-down" yields "n" (linear) time complexity;
+        - "squaring" yields "lg(n)" (logarithmic) time complexity.
     
     > Arguments:
         - n (int): Index of the fibonacci sequence;
         - method (str): Method to calculate the fibonacci number.
-            ---> Options: "recursive", "bottom-up", "top-down";
+            ---> Options: "recursive", "bottom-up", "top-down",
+                          "squaring";
             ---> Defaults to "bottom-up".
     
     > Output:
-        - Fibonacci number for the given index
+        - Fibonacci number for the given index.
     """
     # Recursive Algorithm
     if method == "recursive":
@@ -120,6 +178,10 @@ def fibo(n:int, method="bottom-up") -> int:
     # Top-Down Algorithm
     elif method == "top-down":
         return _fibo_top_down(n, [0]*(n+1))
+    
+    # Squaring Algorithm
+    elif method == "squaring":
+        return _fibo_squaring(n)[0][1]
         
     # Method not implemented
     else:
@@ -146,5 +208,11 @@ if __name__ == "__main__":
     print(f"\n  > Top-Down Approach:")
     print(f"    - Fib[0:11] = {[fibo(n, 'top-down') for n in range(11)]}")
     print(f"    - Fib[10:21] = {[fibo(n, 'top-down') for n in range(10, 21)]}")
-    print(f"    - Fib[30] = {fibo(30, 'top-down')}\n")
+    print(f"    - Fib[30] = {fibo(30, 'top-down')}")
+
+    # Squaring Approach
+    print(f"\n  > Squaring Approach:")
+    print(f"    - Fib[0:11] = {[fibo(n, 'squaring') for n in range(11)]}")
+    print(f"    - Fib[10:21] = {[fibo(n, 'squaring') for n in range(10, 21)]}")
+    print(f"    - Fib[30] = {fibo(30, 'squaring')}\n")
     
