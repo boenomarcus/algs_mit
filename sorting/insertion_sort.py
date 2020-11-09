@@ -2,7 +2,7 @@
 Insertion Sort Algorithm in Python
 
 Author: Marcus Moresco Boeno
-Date: 2020-10-06
+Last Update: 2020-11-09
 
 Implements a function that sorts a list of elements using the 
 insertion sort algorithm as described on Chapter 2 of the book 
@@ -11,15 +11,16 @@ insertion sort algorithm as described on Chapter 2 of the book
 """
 
 
-def insertion_sort(A):
+def insertion_sort(A:list) -> list:
     """Insertion sort algorithm
     
     > Arguments:
         - A (list): List of numbers to be sorted.
     
     > Output:
-        - Sorted list on ascending order.
+        - (list): Sorted list on ascending order.
     """
+    # Iterate from second to last element
     for j in range(1, len(A)):
 
         # Retrieve element as a key
@@ -34,6 +35,7 @@ def insertion_sort(A):
         # Insert element into right position
         A[i+1] = key
 
+    # Return sorted list
     return A
 
 

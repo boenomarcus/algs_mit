@@ -2,7 +2,7 @@
 Bubble Sort Algorithm in Python
 
 Author: Marcus Moresco Boeno
-Date: 2020-10-07
+Last Update: 2020-11-09
 
 Implements a function that sorts a list of elements using the 
 bubble sort algorithm as described on Chapter 2 of the book 
@@ -11,14 +11,14 @@ bubble sort algorithm as described on Chapter 2 of the book
 """
 
 
-def bubble_sort(A):
+def bubble_sort(A:list) -> list:
     """Bubble sort algorithm
     
     > Arguments:
-        - lst (list): List of numbers to be sorted.
+        - A (list): List of numbers to be sorted.
     
     > Output:
-        - Sorted list on ascending order.
+        - (list): Sorted list on ascending order.
     """
 
     # Iterate over list elements (n-1 because the last element

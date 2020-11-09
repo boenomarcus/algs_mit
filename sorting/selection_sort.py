@@ -2,7 +2,7 @@
 Selection Sort Algorithm in Python
 
 Author: Marcus Moresco Boeno
-Date: 2020-10-06
+Last Update: 2020-11-09
 
 Implements a function that sorts a list of elements using the 
 selection sort algorithm as described on Chapter 2 of the book 
@@ -11,14 +11,14 @@ selection sort algorithm as described on Chapter 2 of the book
 """
 
 
-def selection_sort(A):
+def selection_sort(A:list) -> list:
     """Selection sort algorithm
     
     > Arguments:
-        - lst (list): List of numbers to be sorted.
+        - A (list): List of numbers to be sorted.
     
     > Output:
-        - Sorted list on ascending order.
+        - (list): Sorted list on ascending order.
     """
     # Iterano over n-1 elements
     for i in range(len(A)-1):
@@ -36,6 +36,7 @@ def selection_sort(A):
     
     # Return sorted list
     return A
+
 
 if __name__ == "__main__":
 
