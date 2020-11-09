@@ -13,6 +13,9 @@ selection sort algorithm as described on Chapter 2 of the book
 
 def selection_sort(A:list) -> list:
     """Selection sort algorithm
+
+    Big-O Notation:
+        - Selection sort yields "n*2" (quadratic) time complexity.
     
     > Arguments:
         - A (list): List of numbers to be sorted.

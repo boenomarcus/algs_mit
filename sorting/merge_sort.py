@@ -13,6 +13,9 @@ merge sort algorithm as described on Chapter 2 of the book
 
 def merge_sort(A:list) -> list:
     """Merge sort algorithm
+
+    Big-O Notation:
+        - Merge sort yields "n*lg(n)" time complexity.
     
     > Arguments:
         - A (list): List of numbers to be sorted.

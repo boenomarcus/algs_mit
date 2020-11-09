@@ -13,6 +13,9 @@ insertion sort algorithm as described on Chapter 2 of the book
 
 def insertion_sort(A:list) -> list:
     """Insertion sort algorithm
+
+    Big-O Notation:
+        - Insertion sort yields "n*2" (quadratic) time complexity.
     
     > Arguments:
         - A (list): List of numbers to be sorted.
