@@ -1,8 +1,10 @@
 """
 Quick Sort Algorithm in Python
+    - Standard Approach
+    - Randomized Approach
 
 Author: Marcus Moresco Boeno
-Last Update: 2020-11-10
+Last Update: 2020-11-11
 
 Implements functions that sort a list of elements using the 
 quick sort algorithm as described on Chapter 7 of the book 
@@ -44,8 +46,8 @@ def _partition_quick_sort(A:list, low:int, high:int) -> int:
     return pivot_index
 
 
-def _quick_sort(A:list, low:int, high:int) -> list:
-    """Quick Sort Algorithm
+def _quick_sort_randomized(A:list, low:int, high:int) -> list:
+    """Randomized Quick Sort Algorithm
 
     Big-O Notation:
         - Quick sort yields "n**2" (quadratic) time complexity.
@@ -62,9 +64,42 @@ def _quick_sort(A:list, low:int, high:int) -> list:
     """
     # Recursively sort the array using the partioning subroutine
     if low < high:
+
+        # Randomize pivot element and find index
+        random_index = random.randint(low, high)
+        A[high], A[random_index] = A[random_index], A[high]
         pivot = _partition_quick_sort(A, low, high)
-        _quick_sort(A, low, pivot-1)
-        _quick_sort(A, pivot+1, high)
+        
+        # Recursevely sort elements
+        _quick_sort_randomized(A, low, pivot-1)
+        _quick_sort_randomized(A, pivot+1, high)
+
+
+def _quick_sort_std(A:list, low:int, high:int) -> list:
+    """Standard Quick Sort Algorithm
+
+    Big-O Notation:
+        - Quick sort yields "n**2" (quadratic) time complexity.
+    
+    Expected running time of "n*lg(n)".
+    
+    > Arguments:
+        - A (list): List of numbers to be sorted;
+        - low (int): Lower index of the subarray;
+        - high (int): Higher index of the subarray.
+    
+    > Output:
+        - No outputs, the function sorts in place.
+    """
+    # Recursively sort the array using the partioning subroutine
+    if low < high:
+
+        # Find pivot element index
+        pivot = _partition_quick_sort(A, low, high)
+        
+        # Recursevely sort elements
+        _quick_sort_std(A, low, pivot-1)
+        _quick_sort_std(A, pivot+1, high)
 
 
 def quick_sort(A:list, method:str="standard") -> list:
@@ -94,15 +129,13 @@ def quick_sort(A:list, method:str="standard") -> list:
     # Standard Approach
     if method == "standard":
         B = A[:]
-        _quick_sort(B, 0, len(B)-1)
+        _quick_sort_std(B, 0, len(B)-1)
         return B
     
     # Randomized Approach
     elif method == "randomized":
         B = A[:]
-        i = random.randint(0, len(B)-1)
-        B[-1], B[i] = B[i], B[-1]
-        _quick_sort(B, 0, len(B)-1)
+        _quick_sort_randomized(B, 0, len(B)-1)
         return B
 
     # Method not implemented
@@ -113,8 +146,8 @@ def quick_sort(A:list, method:str="standard") -> list:
 if __name__ == "__main__":
 
     # Declare a list, sort it and present results for example purposes
-    A = [6, 4, 5, 2.4, 7.5, 10, 7, 4, 9, 8,]
+    A = random.sample(range(-10, 30), 20)
     print("\n>> Quick Sort Examples:")
-    print(f"\nOriginal List: {A}")
-    print(f"Standard Quick Sort: {quick_sort(A, 'standard')}")
-    print(f"Randomized Quick Sort: {quick_sort(A, 'randomized')}\n")
+    print(f"\nOriginal List: {A}\n")
+    print(f"   > Standard Quick Sort: {quick_sort(A, 'standard')}")
+    print(f"   > Randomized Quick Sort: {quick_sort(A, 'randomized')}\n")
